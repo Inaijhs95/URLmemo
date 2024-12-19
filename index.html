@@ -9,10 +9,7 @@
 
     /* 全体のスタイル */
     body {
-      background-image: url('forest_background.jpg'); /* 丸森山の林の背景画像 */
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      background: linear-gradient(to bottom, #2c3e50, #3498db);
       color: #fff;
       font-family: 'Amatic SC', cursive, 'Arial', sans-serif;
       text-align: center;
@@ -21,6 +18,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
 
     /* コンテナのスタイル */
@@ -31,17 +29,20 @@
       max-width: 800px;
       width: 90%;
       box-sizing: border-box;
+      position: relative;
     }
 
     /* 見出しのスタイル */
     h1 {
       font-size: 48px;
       margin-bottom: 20px;
+      animation: fadeInDown 1s ease-out;
     }
 
     p {
       font-size: 20px;
       margin-bottom: 30px;
+      animation: fadeInUp 1s ease-out;
     }
 
     /* ボタンのスタイル */
@@ -54,21 +55,30 @@
       cursor: pointer;
       border-radius: 10px;
       margin: 10px;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.3s;
     }
 
     .button:hover {
       background-color: #1e8449;
+      transform: scale(1.05);
     }
 
     /* 宝箱のスタイル */
     .treasure-chest {
       margin: 20px 0;
+      animation: swing 2s infinite;
     }
 
-    .treasure-chest img {
-      width: 250px;
+    .treasure-chest svg {
+      width: 200px;
+      height: 200px;
+      fill: #e74c3c;
+      cursor: pointer;
       transition: transform 1s;
+    }
+
+    .treasure-chest.open svg {
+      animation: openChest 1s forwards;
     }
 
     /* ダイヤルコンテナのスタイル */
@@ -96,11 +106,12 @@
       cursor: pointer;
       border-radius: 5px;
       width: 50px;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.3s;
     }
 
     .decrement:hover, .increment:hover {
       background-color: #d4ac0d;
+      transform: scale(1.1);
     }
 
     .number {
@@ -118,18 +129,51 @@
     #message {
       margin-top: 20px;
       font-size: 20px;
+      min-height: 24px;
+      animation: fadeIn 1s;
     }
 
     #hint-message {
       margin-top: 10px;
       font-size: 18px;
       color: #f1c40f;
+      min-height: 24px;
+      animation: fadeIn 1s;
     }
 
     /* オープンアニメーション */
     .open-animation {
       transform: rotateY(360deg) scale(1.2);
       transition: transform 1s;
+      box-shadow: 0 0 20px gold;
+    }
+
+    @keyframes openChest {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
+
+    /* 宝箱の揺れアニメーション */
+    @keyframes swing {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(5deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    /* フェードインアニメーション */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     /* レスポンシブデザイン */
@@ -143,12 +187,17 @@
         margin: 10px 0;
       }
 
-      .treasure-chest img {
-        width: 180px;
+      .treasure-chest svg {
+        width: 150px;
+        height: 150px;
       }
 
-      .container {
-        margin: 20px;
+      h1 {
+        font-size: 36px;
+      }
+
+      p {
+        font-size: 18px;
       }
     }
   </style>
@@ -163,9 +212,16 @@
   <div class="container" id="treasure-view" style="display: none;">
     <h1>宝箱を開けよう！</h1>
     <p>昔々、丸森山の深い林の中に隠された宝箱があります。その宝箱を開けるためには、4桁のパスワードを解読する必要があります。さあ、挑戦してみましょう！</p>
+    
     <div class="treasure-chest" id="treasure-chest">
-      <img src="treasure_chest_closed.png" alt="宝箱" id="chest-image">
+      <!-- SVGで宝箱を描画 -->
+      <svg viewBox="0 0 64 64">
+        <path d="M8 24 L8 56 L56 56 L56 24 Z" stroke="#fff" stroke-width="2" fill="#e74c3c"/>
+        <rect x="16" y="32" width="32" height="16" fill="#c0392b"/>
+        <circle cx="32" cy="40" r="2" fill="#fff"/>
+      </svg>
     </div>
+    
     <div class="dial-container">
       <div class="dial">
         <button class="decrement" onclick="decrement(0)">-</button>
@@ -188,11 +244,15 @@
         <button class="increment" onclick="increment(3)">+</button>
       </div>
     </div>
+    
     <button class="button submit-button" onclick="checkCode()">開ける</button>
     <button class="button hint-button" onclick="showHint()">ヒント</button>
+    
     <p id="message"></p>
     <p id="hint-message"></p>
-    <audio id="open-sound" src="open_sound.mp3"></audio> <!-- サウンドファイル -->
+    
+    <!-- サウンドエフェクト -->
+    <audio id="open-sound" src="open_sound.mp3"></audio>
   </div>
 
   <script>
@@ -275,12 +335,11 @@
 
     // 宝箱を開けるアニメーションとリダイレクト
     function openChest() {
-      const chestImage = document.getElementById('chest-image');
+      const chestContainer = document.getElementById('treasure-chest');
       const openSound = document.getElementById('open-sound');
       openSound.play();
 
-      chestImage.src = 'treasure_chest_open.png'; // 開いた宝箱の画像に変更
-      chestImage.classList.add('open-animation'); // CSSクラスでアニメーションを適用
+      chestContainer.classList.add('open-animation');
 
       // ダイヤルの値をリセット
       dialValues = [0, 0, 0, 0];
