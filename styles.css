@@ -1,0 +1,120 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #3300cc;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header .logo h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.search-bar {
+    display: flex;
+}
+
+.search-bar input {
+    padding: 5px;
+    border: none;
+    border-radius: 3px 0 0 3px;
+}
+
+.search-bar button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #ffcc00;
+    cursor: pointer;
+    border-radius: 0 3px 3px 0;
+}
+
+main {
+    display: flex;
+    padding: 20px;
+}
+
+.featured, .latest {
+    flex: 3;
+    margin-right: 20px;
+}
+
+.featured article {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.featured article img {
+    max-width: 100%;
+    border-radius: 5px;
+}
+
+.featured article h3 {
+    margin: 10px 0;
+}
+
+.featured article p {
+    color: #555;
+}
+
+.featured article a {
+    color: #3300cc;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.latest ul, aside ul {
+    list-style: none;
+}
+
+.latest ul li, aside ul li {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.latest ul li a, aside ul li a {
+    text-decoration: none;
+    color: #3300cc;
+}
+
+aside {
+    flex: 1;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
