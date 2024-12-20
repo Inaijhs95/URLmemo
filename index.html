@@ -1,369 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>丸森山の宝箱</title>
-  <style>
-    /* フォントのインポート */
-    @import url('https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap');
-
-    /* 全体のスタイル */
-    body {
-      background: linear-gradient(to bottom, #2c3e50, #3498db);
-      color: #fff;
-      font-family: 'Amatic SC', cursive, 'Arial', sans-serif;
-      text-align: center;
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    /* コンテナのスタイル */
-    .container {
-      background: rgba(0, 0, 0, 0.7);
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 800px;
-      width: 90%;
-      box-sizing: border-box;
-      position: relative;
-    }
-
-    /* 見出しのスタイル */
-    h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
-      animation: fadeInDown 1s ease-out;
-    }
-
-    p {
-      font-size: 20px;
-      margin-bottom: 30px;
-      animation: fadeInUp 1s ease-out;
-    }
-
-    /* ボタンのスタイル */
-    .button {
-      background-color: #27ae60;
-      border: none;
-      color: #fff;
-      padding: 15px 30px;
-      font-size: 20px;
-      cursor: pointer;
-      border-radius: 10px;
-      margin: 10px;
-      transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .button:hover {
-      background-color: #1e8449;
-      transform: scale(1.05);
-    }
-
-    /* 宝箱のスタイル */
-    .treasure-chest {
-      margin: 20px 0;
-      animation: swing 2s infinite;
-    }
-
-    .treasure-chest svg {
-      width: 200px;
-      height: 200px;
-      fill: #e74c3c;
-      cursor: pointer;
-      transition: transform 1s;
-    }
-
-    .treasure-chest.open svg {
-      animation: openChest 1s forwards;
-    }
-
-    /* ダイヤルコンテナのスタイル */
-    .dial-container {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-
-    /* ダイヤルのスタイル */
-    .dial {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 10px;
-    }
-
-    .decrement, .increment {
-      background-color: #f1c40f;
-      border: none;
-      color: #000;
-      padding: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 5px;
-      width: 50px;
-      transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .decrement:hover, .increment:hover {
-      background-color: #d4ac0d;
-      transform: scale(1.1);
-    }
-
-    .number {
-      background-color: #f39c12;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 24px;
-      min-width: 50px;
-      margin: 5px 0;
-      border: 2px solid #fff;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-    }
-
-    /* メッセージのスタイル */
-    #message {
-      margin-top: 20px;
-      font-size: 20px;
-      min-height: 24px;
-      animation: fadeIn 1s;
-    }
-
-    #hint-message {
-      margin-top: 10px;
-      font-size: 18px;
-      color: #f1c40f;
-      min-height: 24px;
-      animation: fadeIn 1s;
-    }
-
-    /* オープンアニメーション */
-    .open-animation {
-      transform: rotateY(360deg) scale(1.2);
-      transition: transform 1s;
-      box-shadow: 0 0 20px gold;
-    }
-
-    @keyframes openChest {
-      0% { transform: rotateY(0deg); }
-      100% { transform: rotateY(360deg); }
-    }
-
-    /* 宝箱の揺れアニメーション */
-    @keyframes swing {
-      0% { transform: rotate(0deg); }
-      50% { transform: rotate(5deg); }
-      100% { transform: rotate(0deg); }
-    }
-
-    /* フェードインアニメーション */
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-50px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(50px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* レスポンシブデザイン */
-    @media (max-width: 600px) {
-      .dial-container {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .dial {
-        margin: 10px 0;
-      }
-
-      .treasure-chest svg {
-        width: 150px;
-        height: 150px;
-      }
-
-      h1 {
-        font-size: 36px;
-      }
-
-      p {
-        font-size: 18px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ニュースページ - サンプル</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container" id="home-view">
-    <h1>丸森山の宝箱へようこそ！</h1>
-    <p>丸森山の美しい林の下に隠された宝箱を見つけ、4桁のパスワードを解読しましょう。</p>
-    <button class="button" id="start-button">スタート</button>
-  </div>
+    <header>
+        <div class="logo">
+            <h1>Yahoo! ニュース</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">トップ</a></li>
+                <li><a href="#">国内</a></li>
+                <li><a href="#">国際</a></li>
+                <li><a href="#">経済</a></li>
+                <li><a href="#">エンタメ</a></li>
+                <li><a href="#">スポーツ</a></li>
+            </ul>
+        </nav>
+        <div class="search-bar">
+            <input type="text" placeholder="検索...">
+            <button>検索</button>
+        </div>
+    </header>
 
-  <div class="container" id="treasure-view" style="display: none;">
-    <h1>宝箱を開けよう！</h1>
-    <p>昔々、丸森山の深い林の中に隠された宝箱があります。その宝箱を開けるためには、4桁のパスワードを解読する必要があります。さあ、挑戦してみましょう！</p>
-    
-    <div class="treasure-chest" id="treasure-chest">
-      <!-- SVGで宝箱を描画 -->
-      <svg viewBox="0 0 64 64">
-        <path d="M8 24 L8 56 L56 56 L56 24 Z" stroke="#fff" stroke-width="2" fill="#e74c3c"/>
-        <rect x="16" y="32" width="32" height="16" fill="#c0392b"/>
-        <circle cx="32" cy="40" r="2" fill="#fff"/>
-      </svg>
-    </div>
-    
-    <div class="dial-container">
-      <div class="dial">
-        <button class="decrement" onclick="decrement(0)">-</button>
-        <span class="number" id="dial-0">0</span>
-        <button class="increment" onclick="increment(0)">+</button>
-      </div>
-      <div class="dial">
-        <button class="decrement" onclick="decrement(1)">-</button>
-        <span class="number" id="dial-1">0</span>
-        <button class="increment" onclick="increment(1)">+</button>
-      </div>
-      <div class="dial">
-        <button class="decrement" onclick="decrement(2)">-</button>
-        <span class="number" id="dial-2">0</span>
-        <button class="increment" onclick="increment(2)">+</button>
-      </div>
-      <div class="dial">
-        <button class="decrement" onclick="decrement(3)">-</button>
-        <span class="number" id="dial-3">0</span>
-        <button class="increment" onclick="increment(3)">+</button>
-      </div>
-    </div>
-    
-    <button class="button submit-button" onclick="checkCode()">開ける</button>
-    <button class="button hint-button" onclick="showHint()">ヒント</button>
-    
-    <p id="message"></p>
-    <p id="hint-message"></p>
-    
-    <!-- サウンドエフェクト -->
-    <audio id="open-sound" src="open_sound.mp3"></audio>
-  </div>
+    <main>
+        <section class="featured">
+            <h2>最新ニュース</h2>
+            <article>
+                <img src="https://via.placeholder.com/300x200" alt="ニュース画像">
+                <h3>見出しタイトル1</h3>
+                <p>ニュースの概要がここに表示されます。詳細をクリックしてください。</p>
+                <a href="#">続きを読む</a>
+            </article>
+            <article>
+                <img src="https://via.placeholder.com/300x200" alt="ニュース画像">
+                <h3>見出しタイトル2</h3>
+                <p>ニュースの概要がここに表示されます。詳細をクリックしてください。</p>
+                <a href="#">続きを読む</a>
+            </article>
+        </section>
 
-  <script>
-    // パスワードの設定（例: 5678）
-    const PASSWORD = [5, 6, 7, 8];
+        <section class="latest">
+            <h2>最新記事</h2>
+            <ul>
+                <li><a href="#">最新ニュース1</a></li>
+                <li><a href="#">最新ニュース2</a></li>
+                <li><a href="#">最新ニュース3</a></li>
+                <li><a href="#">最新ニュース4</a></li>
+                <li><a href="#">最新ニュース5</a></li>
+            </ul>
+        </section>
 
-    // 現在のダイヤルの値を格納
-    let dialValues = [0, 0, 0, 0];
+        <aside>
+            <h2>人気記事</h2>
+            <ul>
+                <li><a href="#">人気記事1</a></li>
+                <li><a href="#">人気記事2</a></li>
+                <li><a href="#">人気記事3</a></li>
+                <li><a href="#">人気記事4</a></li>
+                <li><a href="#">人気記事5</a></li>
+            </ul>
+        </aside>
+    </main>
 
-    // ヒントの設定
-    let hintCount = 0;
-    const hints = [
-      'ヒント1: 丸森山の宝箱のパスワードは自然の数字に関連しています。',
-      'ヒント2: パスワードの各桁は連続した数字です。'
-    ];
+    <footer>
+        <p>&copy; 2024 ニュースページ サンプル</p>
+    </footer>
 
-    // スタートボタンのイベントリスナー
-    document.getElementById('start-button').addEventListener('click', () => {
-      document.getElementById('home-view').style.display = 'none';
-      document.getElementById('treasure-view').style.display = 'block';
-    });
-
-    // ダイヤルを増加させる関数
-    function increment(index) {
-      if (dialValues[index] < 9) {
-        dialValues[index]++;
-      } else {
-        dialValues[index] = 0; // 9の次は0に戻る
-      }
-      updateDial(index);
-    }
-
-    // ダイヤルを減少させる関数
-    function decrement(index) {
-      if (dialValues[index] > 0) {
-        dialValues[index]--;
-      } else {
-        dialValues[index] = 9; // 0の前は9に戻る
-      }
-      updateDial(index);
-    }
-
-    // ダイヤルの表示を更新する関数
-    function updateDial(index) {
-      document.getElementById(`dial-${index}`).textContent = dialValues[index];
-      // 進行状況を保存
-      localStorage.setItem('dialValues', JSON.stringify(dialValues));
-    }
-
-    // パスワードをチェックする関数
-    function checkCode() {
-      const message = document.getElementById('message');
-      let isCorrect = true;
-      
-      for (let i = 0; i < 4; i++) {
-        if (dialValues[i] !== PASSWORD[i]) {
-          isCorrect = false;
-          break;
-        }
-      }
-
-      if (isCorrect) {
-        message.textContent = '正解！宝箱が開きます...';
-        openChest();
-      } else {
-        message.textContent = 'パスワードが違います。もう一度試してください。';
-      }
-    }
-
-    // ヒントを表示する関数
-    function showHint() {
-      const hintMessage = document.getElementById('hint-message');
-      if (hintCount < hints.length) {
-        hintMessage.textContent = hints[hintCount];
-        hintCount++;
-      } else {
-        hintMessage.textContent = 'これ以上のヒントはありません。頑張ってください！';
-      }
-    }
-
-    // 宝箱を開けるアニメーションとリダイレクト
-    function openChest() {
-      const chestContainer = document.getElementById('treasure-chest');
-      const openSound = document.getElementById('open-sound');
-      openSound.play();
-
-      chestContainer.classList.add('open-animation');
-
-      // ダイヤルの値をリセット
-      dialValues = [0, 0, 0, 0];
-      for (let i = 0; i < 4; i++) {
-        updateDial(i);
-      }
-      localStorage.removeItem('dialValues');
-
-      // 一定時間後にリダイレクト
-      setTimeout(() => {
-        window.location.href = 'https://line.me/R/oaMessage/%40778unfqy/%E5%AE%9D%E7%AE%B1%E3%82%92%E9%96%8B%E3%81%91%E3%81%BE%E3%81%97%E3%81%9F';
-      }, 2000); // 2秒後にリダイレクト
-    }
-
-    // ページ読み込み時にダイヤルの値をロード
-    window.onload = function() {
-      const savedDial = JSON.parse(localStorage.getItem('dialValues'));
-      if (savedDial) {
-        dialValues = savedDial;
-        for (let i = 0; i < 4; i++) {
-          document.getElementById(`dial-${i}`).textContent = dialValues[i];
-        }
-      }
-    }
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
