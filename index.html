@@ -2,75 +2,74 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ニュースページ - サンプル</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>URLジャンプページ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <h1>Yahoo! ニュース</h1>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#">トップ</a></li>
-                <li><a href="#">国内</a></li>
-                <li><a href="#">国際</a></li>
-                <li><a href="#">経済</a></li>
-                <li><a href="#">エンタメ</a></li>
-                <li><a href="#">スポーツ</a></li>
-            </ul>
-        </nav>
-        <div class="search-bar">
-            <input type="text" placeholder="検索...">
-            <button>検索</button>
-        </div>
-    </header>
 
-    <main>
-        <section class="featured">
-            <h2>最新ニュース</h2>
-            <article>
-                <img src="https://via.placeholder.com/300x200" alt="ニュース画像">
-                <h3>見出しタイトル1</h3>
-                <p>ニュースの概要がここに表示されます。詳細をクリックしてください。</p>
-                <a href="#">続きを読む</a>
-            </article>
-            <article>
-                <img src="https://via.placeholder.com/300x200" alt="ニュース画像">
-                <h3>見出しタイトル2</h3>
-                <p>ニュースの概要がここに表示されます。詳細をクリックしてください。</p>
-                <a href="#">続きを読む</a>
-            </article>
-        </section>
+<div class="container">
+    <h2>URLジャンプ</h2>
+    <p>https://x.gd/ の後に続く部分を入力してください。</p>
+    <input type="text" id="urlSuffix" placeholder="例: gtoosm">
+    <button onclick="checkAndRedirect()">決定</button>
+</div>
 
-        <section class="latest">
-            <h2>最新記事</h2>
-            <ul>
-                <li><a href="#">最新ニュース1</a></li>
-                <li><a href="#">最新ニュース2</a></li>
-                <li><a href="#">最新ニュース3</a></li>
-                <li><a href="#">最新ニュース4</a></li>
-                <li><a href="#">最新ニュース5</a></li>
-            </ul>
-        </section>
+<script>
+    function checkAndRedirect() {
+        const baseURL = "https://x.gd/";
+        const correctSuffix = "gtoosm"; // 正しいURLの末尾部分
+        const userInput = document.getElementById("urlSuffix").value.trim();
 
-        <aside>
-            <h2>人気記事</h2>
-            <ul>
-                <li><a href="#">人気記事1</a></li>
-                <li><a href="#">人気記事2</a></li>
-                <li><a href="#">人気記事3</a></li>
-                <li><a href="#">人気記事4</a></li>
-                <li><a href="#">人気記事5</a></li>
-            </ul>
-        </aside>
-    </main>
+        if (userInput === "") {
+            alert("末尾部分を入力してください。");
+            return;
+        }
 
-    <footer>
-        <p>&copy; 2024 ニュースページ サンプル</p>
-    </footer>
+        if (userInput === correctSuffix) {
+            // 正しい場合、指定のURLにジャンプ
+            window.location.href = baseURL + userInput;
+        } else {
+            // 間違っている場合、ポップアップを表示
+            alert("イナイのXにヒントがあるかも！");
+        }
+    }
+</script>
 
-    <script src="script.js"></script>
 </body>
 </html>
