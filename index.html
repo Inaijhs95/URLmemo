@@ -134,7 +134,8 @@
             window.location.href = baseURL + userInput;
         } else {
             // 間違っている場合、ポップアップを表示
-            alert("イナイのXにヒントがあるかも！");
+           alert("↑↓を別な言葉に変換しよう。\nイナイのXにヒントがあるかも！");
+
         }
     }
 
@@ -149,31 +150,6 @@
         }
     };
 
-    // 入力履歴を保持する変数
-    let inputHistory = [];
-
-    // キーボード入力イベントを監視
-    document.addEventListener('keydown', (event) => {
-        const maxHistoryLength = 2;
-
-        // 入力履歴を更新
-        inputHistory.push(event.key);
-        if (inputHistory.length > maxHistoryLength) {
-            inputHistory.shift();
-        }
-    });
-
-    // 検索ボタンを押下した際の処理
-    const searchButton = document.getElementById('searchButton');
-    searchButton.addEventListener('click', () => {
-        // 履歴が "↑↓" の場合にポップアップを表示
-        if (inputHistory.join('') === 'ArrowUpArrowDown') {
-            alert('↑↓を別な言葉に変換しよう');
-            inputHistory = []; // 履歴をクリア
-        } else {
-            alert('通常の検索処理を行います。'); // 通常の検索処理
-        }
-    });
 </script>
 
 
