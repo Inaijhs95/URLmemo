@@ -2,12 +2,12 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>変なメモ</title>
+    <title>変なメモ - Google風</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- ビューポートの設定 -->
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #fff;
             display: flex;
             min-height: 100vh;
             justify-content: center;
@@ -16,61 +16,61 @@
             box-sizing: border-box;
         }
         .container {
-            background-color: #fff;
-            padding: 20px 15px; /* スマホ向けにパディングを調整 */
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
             width: 100%;
-            max-width: 400px; /* 最大幅を設定 */
+            max-width: 600px; /* 最大幅を広く設定 */
         }
-        h2 {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            text-align: center;
+        .logo {
+            margin-bottom: 40px;
         }
-        p {
-            font-size: 1em;
-            margin-bottom: 15px;
-            text-align: center;
+        .logo img {
+            width: 200px; /* ロゴのサイズ調整 */
+            height: auto;
+        }
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         input[type="text"] {
             width: 100%;
-            padding: 12px; /* タッチ操作しやすい大きさに */
-            margin-top: 10px;
+            max-width: 500px;
+            padding: 12px 20px; /* タッチ操作しやすい大きさに */
             margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1em;
-            box-sizing: border-box;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            font-size: 16px;
+            box-shadow: none;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            border-color: #1a73e8;
         }
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #007BFF;
+            max-width: 500px;
+            padding: 10px;
+            background-color: #1a73e8;
             border: none;
-            border-radius: 4px;
+            border-radius: 24px;
             color: #fff;
-            font-size: 1em;
+            font-size: 16px;
             cursor: pointer;
+            margin-bottom: 10px;
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #1669c1;
         }
         /* メディアクエリを使用してさらに調整 */
-        @media (max-width: 400px) {
-            .container {
-                padding: 15px 10px;
-            }
-            h2 {
-                font-size: 1.3em;
-            }
-            p {
-                font-size: 0.9em;
+        @media (max-width: 600px) {
+            .logo img {
+                width: 150px;
             }
             input[type="text"], button {
-                font-size: 0.9em;
-                padding: 10px;
+                max-width: 100%;
             }
         }
     </style>
@@ -78,10 +78,14 @@
 <body>
 
 <div class="container">
-    <h2>変なメモのURLを解読しよう</h2>
-    <p>https://x.gd/ の後に続く部分を入力してください。</p>
-    <input type="text" id="urlSuffix" placeholder="例: inai95">
-    <button onclick="checkAndRedirect()">決定</button>
+    <div class="logo">
+        <!-- Googleのロゴを使用する場合は適切な画像URLに変更してください -->
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" alt="Google Logo">
+    </div>
+    <div class="search-box">
+        <input type="text" id="urlSuffix" placeholder="https://x.gd/ の後に続く部分を入力">
+        <button onclick="checkAndRedirect()">決定</button>
+    </div>
 </div>
 
 <script>
