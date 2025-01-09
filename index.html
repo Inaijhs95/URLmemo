@@ -32,21 +32,36 @@
             flex-direction: column;
             align-items: center;
         }
-        input[type="text"] {
+        .input-group {
+            display: flex;
             width: 100%;
             max-width: 500px;
-            padding: 12px 20px; /* タッチ操作しやすい大きさに */
             margin-bottom: 20px;
-            border: 1px solid #dfe1e5;
-            border-radius: 24px;
-            font-size: 16px;
-            box-shadow: none;
-            transition: box-shadow 0.3s, border-color 0.3s;
         }
-        input[type="text"]:focus {
+        .input-prefix {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: #f1f3f4;
+            border: 1px solid #dfe1e5;
+            border-right: none;
+            border-radius: 24px 0 0 24px;
+            font-size: 16px;
+            color: #555;
+        }
+        .input-suffix {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #dfe1e5;
+            border-left: none;
+            border-radius: 0 24px 24px 0;
+            font-size: 16px;
             outline: none;
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            box-sizing: border-box;
+        }
+        .input-suffix:focus {
             border-color: #1a73e8;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
         }
         button {
             width: 100%;
@@ -69,8 +84,16 @@
             .logo img {
                 width: 150px;
             }
-            input[type="text"], button {
+            .input-group {
                 max-width: 100%;
+            }
+            .input-prefix, .input-suffix {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px;
             }
         }
     </style>
@@ -83,7 +106,10 @@
         <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" alt="Google Logo">
     </div>
     <div class="search-box">
-        <input type="text" id="urlSuffix" placeholder="https://x.gd/ の後に続く部分を入力">
+        <div class="input-group">
+            <span class="input-prefix">https://x.gd/</span>
+            <input type="text" id="urlSuffix" class="input-suffix" placeholder="gtoosm">
+        </div>
         <button onclick="checkAndRedirect()">決定</button>
     </div>
 </div>
@@ -107,6 +133,17 @@
             alert("イナイのXにヒントがあるかも！");
         }
     }
+
+    // ページロード時に正しいURLが入力されている場合、自動的にリダイレクト
+    window.onload = function() {
+        const baseURL = "https://x.gd/";
+        const correctURL = baseURL + "gtoosm";
+        if (window.location.href === correctURL) {
+            // ここにリダイレクト先の処理を追加（必要に応じて）
+            // 例: ページの内容を変更するなど
+            console.log("正しいURLにアクセスしました。");
+        }
+    };
 </script>
 
 </body>
