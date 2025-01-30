@@ -8,34 +8,60 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        #inputImage {
-            max-width: 100%;
-            height: auto;
+        .braille-cell {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .braille-dot {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #000;
+            border-radius: 50%;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+            background-color: white;
+        }
+        .braille-dot.checked {
+            background-color: black;
         }
         #decodedText {
             margin-top: 20px;
-            font-size: 1.2em;
+            font-size: 1.5em;
             font-weight: bold;
         }
-        #loader {
-            display: none;
+        .controls {
             margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <h1>アルファベット点字デコードツール</h1>
-    <input type="file" id="fileInput" accept="image/*"><br><br>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <img id="inputImage" src="" alt="アップロードした画像がここに表示されます">
-    <div id="loader">デコード中...</div>
+    <div id="brailleContainer">
+        <div class="braille-cell" data-index="0">
+            <div class="braille-dot" data-dot="1"></div>
+            <div class="braille-dot" data-dot="4"></div><br>
+            <div class="braille-dot" data-dot="2"></div>
+            <div class="braille-dot" data-dot="5"></div><br>
+            <div class="braille-dot" data-dot="3"></div>
+            <div class="braille-dot" data-dot="6"></div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="addCell">セルを追加</button>
+        <button id="removeCell">セルを削除</button>
+        <button id="decode">デコード</button>
+    </div>
     <div id="decodedText">デコード結果: </div>
 
-    <!-- OpenCV.jsを読み込み -->
-    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
-
     <script>
-        let brailleMapping = {
+        const brailleMapping = {
             '100000': 'A',
             '110000': 'B',
             '100100': 'C',
@@ -64,110 +90,64 @@
             '101011': 'Z'
         };
 
-        function onOpenCvReady() {
-            console.log('OpenCV.js is ready');
+        let cellCount = 1;
+
+        document.getElementById('addCell').addEventListener('click', addBrailleCell);
+        document.getElementById('removeCell').addEventListener('click', removeBrailleCell);
+        document.getElementById('decode').addEventListener('click', decodeBraille);
+
+        function addBrailleCell() {
+            cellCount++;
+            const brailleContainer = document.getElementById('brailleContainer');
+            const newCell = document.createElement('div');
+            newCell.className = 'braille-cell';
+            newCell.setAttribute('data-index', cellCount - 1);
+            newCell.innerHTML = `
+                <div class="braille-dot" data-dot="1"></div>
+                <div class="braille-dot" data-dot="4"></div><br>
+                <div class="braille-dot" data-dot="2"></div>
+                <div class="braille-dot" data-dot="5"></div><br>
+                <div class="braille-dot" data-dot="3"></div>
+                <div class="braille-dot" data-dot="6"></div>
+            `;
+            brailleContainer.appendChild(newCell);
+            attachDotListeners(newCell);
         }
 
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            if (e.target.files.length === 0) {
-                return;
+        function removeBrailleCell() {
+            if (cellCount > 1) {
+                const brailleContainer = document.getElementById('brailleContainer');
+                brailleContainer.removeChild(brailleContainer.lastElementChild);
+                cellCount--;
             }
-            let file = e.target.files[0];
-            let img = document.getElementById('inputImage');
-            img.src = URL.createObjectURL(file);
-            img.onload = function() {
-                URL.revokeObjectURL(img.src); // メモリ解放
-                processImage();
-            }
-        });
+        }
 
-        function processImage() {
-            document.getElementById('loader').style.display = 'block';
-            setTimeout(() => { // OpenCVのロード待ち
-                let imgElement = document.getElementById('inputImage');
-                let canvas = document.getElementById('canvas');
-                let ctx = canvas.getContext('2d');
-                canvas.width = imgElement.width;
-                canvas.height = imgElement.height;
-                ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-
-                let src = cv.imread(canvas);
-                let gray = new cv.Mat();
-                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-                let binary = new cv.Mat();
-                cv.threshold(gray, binary, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
-
-                // ノイズ除去
-                let kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(3, 3));
-                cv.morphologyEx(binary, binary, cv.MORPH_OPEN, kernel);
-
-                // 輪郭検出
-                let contours = new cv.MatVector();
-                let hierarchy = new cv.Mat();
-                cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-
-                // 各セルのバウンディングボックスを取得
-                let cells = [];
-                for (let i = 0; i < contours.size(); ++i) {
-                    let cnt = contours.get(i);
-                    let rect = cv.boundingRect(cnt);
-                    cells.push(rect);
-                    cnt.delete();
-                }
-
-                // セルをソート（左から右、上から下）
-                cells.sort((a, b) => {
-                    if (Math.abs(a.y - b.y) > 10) { // y座標で比較
-                        return a.y - b.y;
-                    } else { // x座標で比較
-                        return a.x - b.x;
-                    }
+        function attachDotListeners(cell) {
+            const dots = cell.querySelectorAll('.braille-dot');
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    dot.classList.toggle('checked');
                 });
+            });
+        }
 
-                // 仮に各セルが同じサイズで並んでいると仮定
-                // 実際にはセルのサイズや間隔に応じて調整が必要
-                let decodedText = "";
-                for (let cell of cells) {
-                    let x = cell.x;
-                    let y = cell.y;
-                    let w = cell.width;
-                    let h = cell.height;
-                    let cellImg = binary.roi(cell);
+        // Attach listeners to the initial cell
+        const initialCell = document.querySelector('.braille-cell');
+        attachDotListeners(initialCell);
 
-                    // 各点の位置を定義（相対座標）
-                    let points = [
-                        {x: Math.floor(w * 0.2), y: Math.floor(h * 0.2)}, // 点1
-                        {x: Math.floor(w * 0.2), y: Math.floor(h * 0.5)}, // 点2
-                        {x: Math.floor(w * 0.2), y: Math.floor(h * 0.8)}, // 点3
-                        {x: Math.floor(w * 0.7), y: Math.floor(h * 0.2)}, // 点4
-                        {x: Math.floor(w * 0.7), y: Math.floor(h * 0.5)}, // 点5
-                        {x: Math.floor(w * 0.7), y: Math.floor(h * 0.8)}  // 点6
-                    ];
-
-                    let pattern = '';
-                    for (let point of points) {
-                        let px = point.x;
-                        let py = point.y;
-                        // 小さな領域で点の有無を判定
-                        let size = 5; // 領域の半径
-                        let roi = cellImg.roi(new cv.Rect(px - size, py - size, size * 2, size * 2));
-                        let nonZero = cv.countNonZero(roi);
-                        pattern += (nonZero > 10) ? '1' : '0';
-                        roi.delete();
-                    }
-
-                    let character = brailleMapping[pattern] || '?';
-                    decodedText += character;
-                    cellImg.delete();
+        function decodeBraille() {
+            const cells = document.querySelectorAll('.braille-cell');
+            let decodedText = '';
+            cells.forEach(cell => {
+                const dots = cell.querySelectorAll('.braille-dot');
+                let pattern = '';
+                for (let i = 1; i <=6; i++) {
+                    const dot = cell.querySelector(`.braille-dot[data-dot="${i}"]`);
+                    pattern += dot.classList.contains('checked') ? '1' : '0';
                 }
-
-                // 結果の表示
-                document.getElementById('decodedText').innerText = "デコード結果: " + decodedText;
-
-                // メモリ解放
-                src.delete(); gray.delete(); binary.delete(); contours.delete(); hierarchy.delete();
-                document.getElementById('loader').style.display = 'none';
-            }, 100); // 適宜調整
+                decodedText += brailleMapping[pattern] || '?';
+            });
+            document.getElementById('decodedText').innerText = "デコード結果: " + decodedText;
         }
     </script>
 </body>
