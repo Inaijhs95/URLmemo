@@ -138,7 +138,7 @@
     </div>
     <div class="controls">
         <button id="addCell">＋</button>
-        <button id="removeCell">✕</button>
+        <button id="removeCell">－</button>
         <button id="decode">⇔</button>
     </div>
     <div id="decodedText">⒜: </div>
@@ -236,7 +236,7 @@
                 }
                 decodedText += brailleMapping[pattern] || '?';
             });
-            document.getElementById('decodedText').innerText = "変換結果: " + decodedText;
+            document.getElementById('decodedText').innerText = "⒜: " + decodedText;
         }
     </script>
 </body>
