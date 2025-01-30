@@ -184,7 +184,7 @@
         // モールス信号をデコードして表示
         function convertMorse() {
             if (currentInput === '') {
-                alert('モールス信号を入力してください。');
+                alert('信号を入力してください。');
                 return;
             }
             const character = morseCodeMap[currentInput];
@@ -196,7 +196,7 @@
                 inputArea.textContent = '入力: ';
                 suggestionsArea.textContent = '候補: -';
             } else {
-                alert('無効なモールス信号です。1文字ごとに変換してください。');
+                alert('無効な信号です。適宜、変換してください。');
             }
         }
 
