@@ -2,14 +2,15 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>モールス信号</title>
+    <title>モールス信号デコーダー</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- レスポンシブ対応 -->
     <style>
         /* 全体のスタイル設定 */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             height: 100vh;
             background-color: #121212; /* ダークテーマの背景色 */
             color: #e0e0e0; /* 明るいテキスト色 */
@@ -20,12 +21,13 @@
         }
         h1 {
             color: #ffffff;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            font-size: 2em;
         }
         /* ボタンのスタイル */
         .button {
-            font-size: 24px;
-            padding: 20px 40px;
+            font-size: 1.5em;
+            padding: 15px 30px;
             margin: 10px;
             cursor: pointer;
             border: none;
@@ -34,6 +36,8 @@
             color: white;
             box-shadow: 0 0 20px rgba(30, 136, 229, 0.6); /* グロウ効果 */
             transition: background-color 0.3s, box-shadow 0.3s;
+            width: 120px;
+            height: 60px;
         }
         .button:hover {
             background-color: #1565c0;
@@ -41,22 +45,27 @@
         }
         /* 特殊ボタンのスタイル */
         #clearBtn, #convertBtn {
-            font-size: 18px;
+            font-size: 1em;
             padding: 10px 20px;
             margin-top: 20px;
             border-radius: 8px;
             background-color: #43a047;
             box-shadow: 0 0 15px rgba(67, 160, 71, 0.6);
+            width: 100px;
+            height: 50px;
         }
         #clearBtn:hover, #convertBtn:hover {
             background-color: #388e3c;
             box-shadow: 0 0 20px rgba(56, 142, 60, 0.8);
         }
         /* 入力と結果の表示エリア */
-        #inputArea, #resultArea {
-            font-size: 24px;
+        #inputArea, #resultArea, #suggestions {
+            font-size: 1.5em;
             margin-top: 20px;
             min-height: 30px;
+            width: 80%;
+            max-width: 400px;
+            word-wrap: break-word;
         }
         /* 電球のスタイル */
         #lightbulb {
@@ -80,10 +89,31 @@
             fill: #ffeb3b; /* 点灯時の色（黄色） */
             filter: drop-shadow(0 0 20px #ffeb3b);
         }
+        /* レスポンシブデザイン */
+        @media (max-width: 600px) {
+            .button {
+                font-size: 1.2em;
+                padding: 15px 25px;
+                width: 100px;
+                height: 50px;
+            }
+            #clearBtn, #convertBtn {
+                font-size: 0.9em;
+                width: 80px;
+                height: 40px;
+            }
+            #inputArea, #resultArea, #suggestions {
+                font-size: 1.2em;
+            }
+            #lightbulb {
+                width: 80px;
+                height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>モールス信号</h1>
+    <h1>モールス信号デコーダー</h1>
     <div>
         <button class="button" id="dotBtn">・</button>
         <button class="button" id="dashBtn">ー</button>
@@ -92,6 +122,7 @@
         <button class="button" id="convertBtn">変換</button>
     </div>
     <div id="inputArea">入力: </div>
+    <div id="suggestions">候補: -</div> <!-- 追加: 候補表示エリア -->
     <div id="resultArea">文字: </div>
     <button id="clearBtn" class="button">クリア</button>
 
@@ -148,6 +179,7 @@
         const convertBtn = document.getElementById('convertBtn');
         const inputArea = document.getElementById('inputArea');
         const resultArea = document.getElementById('resultArea');
+        const suggestionsArea = document.getElementById('suggestions'); // 追加
         const clearBtn = document.getElementById('clearBtn');
         const bulbSVG = document.getElementById('bulbSVG');
 
@@ -155,11 +187,13 @@
         dotBtn.addEventListener('click', () => {
             addMorse('・');
             flashBulb(300); // ドットの場合は300ms点灯
+            updateSuggestions(); // 候補更新
         });
 
         dashBtn.addEventListener('click', () => {
             addMorse('ー');
             flashBulb(700); // ダッシュの場合は700ms点灯
+            updateSuggestions(); // 候補更新
         });
 
         // 変換ボタンの処理
@@ -169,10 +203,7 @@
 
         // クリアボタンの処理
         clearBtn.addEventListener('click', () => {
-            currentInput = '';
-            decodedText = '';
-            inputArea.textContent = '入力: ';
-            resultArea.textContent = '文字: ';
+            clearAll();
         });
 
         // モールス信号を追加
@@ -194,9 +225,19 @@
                 // 次の文字の入力のためにリセット
                 currentInput = '';
                 inputArea.textContent = '入力: ';
+                suggestionsArea.textContent = '候補: -';
             } else {
                 alert('無効なモールス信号です。');
             }
+        }
+
+        // 入力と結果をクリア
+        function clearAll() {
+            currentInput = '';
+            decodedText = '';
+            inputArea.textContent = '入力: ';
+            resultArea.textContent = '文字: ';
+            suggestionsArea.textContent = '候補: -';
         }
 
         // キーボード入力にも対応
@@ -204,21 +245,21 @@
             if (event.key === '.') {
                 addMorse('・');
                 flashBulb(300);
+                updateSuggestions();
             } else if (event.key === '-') {
                 addMorse('ー');
                 flashBulb(700);
+                updateSuggestions();
             } else if (event.key === 'Enter') {
                 convertMorse();
             } else if (event.key === 'Backspace') {
                 // 最後の入力を削除
                 currentInput = currentInput.slice(0, -1);
                 inputArea.textContent = `入力: ${currentInput}`;
+                updateSuggestions();
             } else if (event.key === 'Escape') {
                 // クリア
-                currentInput = '';
-                decodedText = '';
-                inputArea.textContent = '入力: ';
-                resultArea.textContent = '文字: ';
+                clearAll();
             }
         });
 
@@ -228,6 +269,25 @@
             setTimeout(() => {
                 bulbSVG.classList.remove('lit');
             }, duration);
+        }
+
+        // 現在の入力に基づいて候補を更新
+        function updateSuggestions() {
+            if (currentInput === '') {
+                suggestionsArea.textContent = '候補: -';
+                return;
+            }
+            const candidates = [];
+            for (const [morse, char] of Object.entries(morseCodeMap)) {
+                if (morse.startsWith(currentInput)) {
+                    candidates.push(char);
+                }
+            }
+            if (candidates.length > 0) {
+                suggestionsArea.textContent = `候補: ${candidates.join(', ')}`;
+            } else {
+                suggestionsArea.textContent = '候補: -';
+            }
         }
     </script>
 </body>
