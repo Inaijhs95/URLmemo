@@ -4,59 +4,81 @@
     <meta charset="UTF-8">
     <title>モールス信号デコーダー</title>
     <style>
+        /* 全体のスタイル設定 */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 50px;
-            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #121212; /* ダークテーマの背景色 */
+            color: #e0e0e0; /* 明るいテキスト色 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         h1 {
-            color: #333;
+            color: #ffffff;
+            margin-bottom: 40px;
         }
+        /* ボタンのスタイル */
         .button {
             font-size: 24px;
             padding: 20px 40px;
             margin: 10px;
             cursor: pointer;
             border: none;
-            border-radius: 8px;
-            background-color: #4CAF50;
+            border-radius: 12px;
+            background-color: #1e88e5; /* ボタンの基本色 */
             color: white;
-            transition: background-color 0.3s;
+            box-shadow: 0 0 20px rgba(30, 136, 229, 0.6); /* グロウ効果 */
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
         .button:hover {
-            background-color: #45a049;
+            background-color: #1565c0;
+            box-shadow: 0 0 25px rgba(21, 101, 192, 0.8);
         }
-        #inputArea {
-            font-size: 24px;
-            margin-top: 20px;
-            color: #555;
-        }
-        #result {
-            font-size: 32px;
-            margin-top: 30px;
-            font-weight: bold;
-            color: #000;
-        }
+        /* 特殊ボタンのスタイル */
         #clearBtn, #convertBtn {
             font-size: 18px;
             padding: 10px 20px;
             margin-top: 20px;
-            cursor: pointer;
-            border: none;
             border-radius: 8px;
-            background-color: #2196F3;
-            color: white;
-            transition: background-color 0.3s;
+            background-color: #43a047;
+            box-shadow: 0 0 15px rgba(67, 160, 71, 0.6);
         }
-        #clearBtn:hover {
-            background-color: #0b7dda;
+        #clearBtn:hover, #convertBtn:hover {
+            background-color: #388e3c;
+            box-shadow: 0 0 20px rgba(56, 142, 60, 0.8);
         }
-        #convertBtn {
-            background-color: #FF9800;
+        /* 入力と結果の表示エリア */
+        #inputArea, #resultArea {
+            font-size: 24px;
+            margin-top: 20px;
+            min-height: 30px;
         }
-        #convertBtn:hover {
-            background-color: #e68900;
+        /* 電球のスタイル */
+        #lightbulb {
+            margin-top: 40px;
+            width: 100px;
+            height: 180px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 電球のSVG */
+        .bulb {
+            width: 100%;
+            height: 100%;
+            fill: #555555; /* 電球オフの色 */
+            transition: fill 0.3s;
+        }
+        /* 電球が点灯している状態 */
+        .lit {
+            fill: #ffeb3b; /* 点灯時の色（黄色） */
+            filter: drop-shadow(0 0 20px #ffeb3b);
         }
     </style>
 </head>
@@ -70,8 +92,19 @@
         <button class="button" id="convertBtn">変換</button>
     </div>
     <div id="inputArea">入力: </div>
-    <div id="result">文字: </div>
-    <button id="clearBtn">クリア</button>
+    <div id="resultArea">文字: </div>
+    <button id="clearBtn" class="button">クリア</button>
+
+    <!-- 電球の表示エリア -->
+    <div id="lightbulb">
+        <!-- シンプルな電球のSVG -->
+        <svg viewBox="0 0 64 100" xmlns="http://www.w3.org/2000/svg" class="bulb" id="bulbSVG">
+            <path d="M32 0C20.9543 0 12 8.9543 12 20C12 27.5943 16.5571 34.5663 23.0298 38.728L24 40V48H40V40L40.9702 38.728C47.4429 34.5663 52 27.5943 52 20C52 8.9543 43.0457 0 32 0Z"/>
+            <rect x="28" y="48" width="8" height="12" rx="2" ry="2"/>
+            <rect x="26" y="60" width="12" height="4" rx="1" ry="1"/>
+            <rect x="25" y="64" width="14" height="4" rx="1" ry="1"/>
+        </svg>
+    </div>
 
     <script>
         // モールス信号とアルファベットの対応表（ダッシュを 'ー' に統一）
@@ -114,16 +147,19 @@
         const dashBtn = document.getElementById('dashBtn');
         const convertBtn = document.getElementById('convertBtn');
         const inputArea = document.getElementById('inputArea');
-        const resultArea = document.getElementById('result');
+        const resultArea = document.getElementById('resultArea');
         const clearBtn = document.getElementById('clearBtn');
+        const bulbSVG = document.getElementById('bulbSVG');
 
         // ボタンクリック時の処理
         dotBtn.addEventListener('click', () => {
             addMorse('・');
+            flashBulb(300); // ドットの場合は300ms点灯
         });
 
         dashBtn.addEventListener('click', () => {
             addMorse('ー');
+            flashBulb(700); // ダッシュの場合は700ms点灯
         });
 
         // 変換ボタンの処理
@@ -163,12 +199,14 @@
             }
         }
 
-        // キーボード入力にも対応（オプション）
+        // キーボード入力にも対応
         document.addEventListener('keydown', (event) => {
             if (event.key === '.') {
                 addMorse('・');
+                flashBulb(300);
             } else if (event.key === '-') {
                 addMorse('ー');
+                flashBulb(700);
             } else if (event.key === 'Enter') {
                 convertMorse();
             } else if (event.key === 'Backspace') {
@@ -183,6 +221,14 @@
                 resultArea.textContent = '文字: ';
             }
         });
+
+        // 電球を点灯させる関数
+        function flashBulb(duration) {
+            bulbSVG.classList.add('lit');
+            setTimeout(() => {
+                bulbSVG.classList.remove('lit');
+            }, duration);
+        }
     </script>
 </body>
 </html>
