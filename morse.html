@@ -18,6 +18,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            transition: background-color 0.3s; /* 背景色の変化を滑らかに */
         }
         h1 {
             color: #ffffff;
@@ -67,27 +68,11 @@
             max-width: 400px;
             word-wrap: break-word;
         }
-        /* 電球のスタイル */
-        #lightbulb {
-            margin-top: 40px;
-            width: 100px;
-            height: 180px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        /* 電球のSVG */
-        .bulb {
-            width: 100%;
-            height: 100%;
-            fill: #555555; /* 電球オフの色 */
-            transition: fill 0.3s;
-        }
-        /* 電球が点灯している状態 */
-        .lit {
-            fill: #ffeb3b; /* 点灯時の色（黄色） */
-            filter: drop-shadow(0 0 20px #ffeb3b);
+        /* 背景光演出用のクラス */
+        .flash {
+            background-color: #ffffff !important; /* フラッシュ時の背景色 */
+            color: #000000 !important; /* フラッシュ時のテキスト色 */
+            transition: background-color 0.3s, color 0.3s;
         }
         /* レスポンシブデザイン */
         @media (max-width: 600px) {
@@ -105,10 +90,6 @@
             #inputArea, #resultArea, #suggestions {
                 font-size: 1.2em;
             }
-            #lightbulb {
-                width: 80px;
-                height: 150px;
-            }
         }
     </style>
 </head>
@@ -125,17 +106,6 @@
     <div id="suggestions">候補: -</div> <!-- 追加: 候補表示エリア -->
     <div id="resultArea">文字: </div>
     <button id="clearBtn" class="button">クリア</button>
-
-    <!-- 電球の表示エリア -->
-    <div id="lightbulb">
-        <!-- シンプルな電球のSVG -->
-        <svg viewBox="0 0 64 100" xmlns="http://www.w3.org/2000/svg" class="bulb" id="bulbSVG">
-            <path d="M32 0C20.9543 0 12 8.9543 12 20C12 27.5943 16.5571 34.5663 23.0298 38.728L24 40V48H40V40L40.9702 38.728C47.4429 34.5663 52 27.5943 52 20C52 8.9543 43.0457 0 32 0Z"/>
-            <rect x="28" y="48" width="8" height="12" rx="2" ry="2"/>
-            <rect x="26" y="60" width="12" height="4" rx="1" ry="1"/>
-            <rect x="25" y="64" width="14" height="4" rx="1" ry="1"/>
-        </svg>
-    </div>
 
     <script>
         // モールス信号とアルファベットの対応表（ダッシュを 'ー' に統一）
@@ -181,18 +151,17 @@
         const resultArea = document.getElementById('resultArea');
         const suggestionsArea = document.getElementById('suggestions'); // 追加
         const clearBtn = document.getElementById('clearBtn');
-        const bulbSVG = document.getElementById('bulbSVG');
 
         // ボタンクリック時の処理
         dotBtn.addEventListener('click', () => {
             addMorse('・');
-            flashBulb(300); // ドットの場合は300ms点灯
+            flashBackground(300); // ドットの場合は300ms点灯
             updateSuggestions(); // 候補更新
         });
 
         dashBtn.addEventListener('click', () => {
             addMorse('ー');
-            flashBulb(700); // ダッシュの場合は700ms点灯
+            flashBackground(700); // ダッシュの場合は700ms点灯
             updateSuggestions(); // 候補更新
         });
 
@@ -244,11 +213,11 @@
         document.addEventListener('keydown', (event) => {
             if (event.key === '.') {
                 addMorse('・');
-                flashBulb(300);
+                flashBackground(300);
                 updateSuggestions();
             } else if (event.key === '-') {
                 addMorse('ー');
-                flashBulb(700);
+                flashBackground(700);
                 updateSuggestions();
             } else if (event.key === 'Enter') {
                 convertMorse();
@@ -263,11 +232,11 @@
             }
         });
 
-        // 電球を点灯させる関数
-        function flashBulb(duration) {
-            bulbSVG.classList.add('lit');
+        // 背景を点灯させる関数
+        function flashBackground(duration) {
+            document.body.classList.add('flash');
             setTimeout(() => {
-                bulbSVG.classList.remove('lit');
+                document.body.classList.remove('flash');
             }, duration);
         }
 
