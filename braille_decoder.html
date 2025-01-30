@@ -2,55 +2,138 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>点字</title>
+    <title>点字デコードツール</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* 全体のスタイル */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .braille-cell {
-            display: inline-block;
-            margin: 10px;
+
+        h1 {
             text-align: center;
+            margin-bottom: 20px;
         }
+
+        /* 点字セルのコンテナ */
+        #brailleContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* 点字セルのスタイル */
+        .braille-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+
+        /* 点のスタイル */
         .braille-dot {
-            width: 20px;
-            height: 20px;
-            border: 1px solid #000;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #000;
             border-radius: 50%;
-            margin: 5px;
-            display: inline-block;
+            margin: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
             background-color: white;
+            transition: background-color 0.2s;
         }
+
         .braille-dot.checked {
-            background-color: black;
+            background-color: #000;
         }
+
+        /* 改行を含む点字セルの配置 */
+        .braille-cell .row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* コントロールボタンのスタイル */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* デコード結果のスタイル */
         #decodedText {
             margin-top: 20px;
             font-size: 1.5em;
             font-weight: bold;
+            text-align: center;
+            word-break: break-all;
         }
-        .controls {
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 1em;
-            margin-right: 10px;
+
+        /* モバイル向けの調整 */
+        @media (max-width: 600px) {
+            .braille-dot {
+                width: 40px;
+                height: 40px;
+                margin: 10px;
+            }
+
+            button {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>点字</h1>
+    <h1>点字デコードツール</h1>
     <div id="brailleContainer">
         <div class="braille-cell" data-index="0">
-            <div class="braille-dot" data-dot="1"></div>
-            <div class="braille-dot" data-dot="4"></div><br>
-            <div class="braille-dot" data-dot="2"></div>
-            <div class="braille-dot" data-dot="5"></div><br>
-            <div class="braille-dot" data-dot="3"></div>
-            <div class="braille-dot" data-dot="6"></div>
+            <div class="row">
+                <div class="braille-dot" data-dot="1"></div>
+                <div class="braille-dot" data-dot="4"></div>
+            </div>
+            <div class="row">
+                <div class="braille-dot" data-dot="2"></div>
+                <div class="braille-dot" data-dot="5"></div>
+            </div>
+            <div class="row">
+                <div class="braille-dot" data-dot="3"></div>
+                <div class="braille-dot" data-dot="6"></div>
+            </div>
         </div>
     </div>
     <div class="controls">
@@ -103,12 +186,18 @@
             newCell.className = 'braille-cell';
             newCell.setAttribute('data-index', cellCount - 1);
             newCell.innerHTML = `
-                <div class="braille-dot" data-dot="1"></div>
-                <div class="braille-dot" data-dot="4"></div><br>
-                <div class="braille-dot" data-dot="2"></div>
-                <div class="braille-dot" data-dot="5"></div><br>
-                <div class="braille-dot" data-dot="3"></div>
-                <div class="braille-dot" data-dot="6"></div>
+                <div class="row">
+                    <div class="braille-dot" data-dot="1"></div>
+                    <div class="braille-dot" data-dot="4"></div>
+                </div>
+                <div class="row">
+                    <div class="braille-dot" data-dot="2"></div>
+                    <div class="braille-dot" data-dot="5"></div>
+                </div>
+                <div class="row">
+                    <div class="braille-dot" data-dot="3"></div>
+                    <div class="braille-dot" data-dot="6"></div>
+                </div>
             `;
             brailleContainer.appendChild(newCell);
             attachDotListeners(newCell);
@@ -131,7 +220,7 @@
             });
         }
 
-        // Attach listeners to the initial cell
+        // 初期セルにイベントリスナーを追加
         const initialCell = document.querySelector('.braille-cell');
         attachDotListeners(initialCell);
 
@@ -147,7 +236,7 @@
                 }
                 decodedText += brailleMapping[pattern] || '?';
             });
-            document.getElementById('decodedText').innerText = "デコード結果: " + decodedText;
+            document.getElementById('decodedText').innerText = "変換結果: " + decodedText;
         }
     </script>
 </body>
