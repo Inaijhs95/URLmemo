@@ -119,23 +119,35 @@
 </div>
 
 <script>
+    // 全角英数字を半角に変換する関数
+    function toHalfWidth(str) {
+        return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
+            return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+        });
+    }
+
     function checkAndRedirect() {
         const baseURL = "https://x.gd/";
         const correctSuffix = "gtoosm"; // 正しいURLの末尾部分
-        const userInput = document.getElementById("urlSuffix").value.trim();
+        let userInput = document.getElementById("urlSuffix").value.trim();
 
         if (userInput === "") {
             alert("URLの続きを入力してください。");
             return;
         }
 
-        if (userInput === correctSuffix) {
+        // 全角を半角に変換し、小文字に統一
+        userInput = toHalfWidth(userInput).toLowerCase();
+
+        // 正しいサフィックスも同様に処理
+        const processedCorrectSuffix = correctSuffix.toLowerCase();
+
+        if (userInput === processedCorrectSuffix) {
             // 正しい場合、指定のURLにジャンプ
             window.location.href = baseURL + userInput;
         } else {
             // 間違っている場合、ポップアップを表示
-           alert("↑↓を別な言葉に変換しよう。\nイナイのXにヒントがあるかも！");
-
+            alert("↑↓を別な言葉に変換しよう。\nイナイのXにヒントがあるかも！");
         }
     }
 
@@ -149,9 +161,7 @@
             console.log("正しいURLにアクセスしました。");
         }
     };
-
 </script>
-
 
 </body>
 </html>
