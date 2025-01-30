@@ -190,13 +190,13 @@
             const character = morseCodeMap[currentInput];
             if (character) {
                 decodedText += character;
-                resultArea.textContent = `文字: ${decodedText}`;
+                resultArea.textContent = `⒜: ${decodedText}`;
                 // 次の文字の入力のためにリセット
                 currentInput = '';
-                inputArea.textContent = '入力: ';
-                suggestionsArea.textContent = '候補: -';
+                inputArea.textContent = '🔦: ';
+                suggestionsArea.textContent = '？: -';
             } else {
-                alert('無効なモールス信号です。');
+                alert('無効な信号です。');
             }
         }
 
@@ -224,7 +224,7 @@
             } else if (event.key === 'Backspace') {
                 // 最後の入力を削除
                 currentInput = currentInput.slice(0, -1);
-                inputArea.textContent = `入力: ${currentInput}`;
+                inputArea.textContent = `🔦: ${currentInput}`;
                 updateSuggestions();
             } else if (event.key === 'Escape') {
                 // クリア
@@ -243,7 +243,7 @@
         // 現在の入力に基づいて候補を更新
         function updateSuggestions() {
             if (currentInput === '') {
-                suggestionsArea.textContent = '候補: -';
+                suggestionsArea.textContent = '？: -';
                 return;
             }
             const candidates = [];
@@ -253,9 +253,9 @@
                 }
             }
             if (candidates.length > 0) {
-                suggestionsArea.textContent = `候補: ${candidates.join(', ')}`;
+                suggestionsArea.textContent = `？: ${candidates.join(', ')}`;
             } else {
-                suggestionsArea.textContent = '候補: -';
+                suggestionsArea.textContent = '？: -';
             }
         }
     </script>
