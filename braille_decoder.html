@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>アルファベット点字デコードツール</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #inputImage {
+            max-width: 100%;
+            height: auto;
+        }
+        #decodedText {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #loader {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>アルファベット点字デコードツール</h1>
+    <input type="file" id="fileInput" accept="image/*"><br><br>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <img id="inputImage" src="" alt="アップロードした画像がここに表示されます">
+    <div id="loader">デコード中...</div>
+    <div id="decodedText">デコード結果: </div>
+
+    <!-- OpenCV.jsを読み込み -->
+    <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
+
+    <script>
+        let brailleMapping = {
+            '100000': 'A',
+            '110000': 'B',
+            '100100': 'C',
+            '100110': 'D',
+            '100010': 'E',
+            '110100': 'F',
+            '110110': 'G',
+            '110010': 'H',
+            '010100': 'I',
+            '010110': 'J',
+            '101000': 'K',
+            '111000': 'L',
+            '101100': 'M',
+            '101110': 'N',
+            '101010': 'O',
+            '111100': 'P',
+            '111110': 'Q',
+            '111010': 'R',
+            '011100': 'S',
+            '011110': 'T',
+            '101001': 'U',
+            '111001': 'V',
+            '010111': 'W',
+            '101101': 'X',
+            '101111': 'Y',
+            '101011': 'Z'
+        };
+
+        function onOpenCvReady() {
+            console.log('OpenCV.js is ready');
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (e.target.files.length === 0) {
+                return;
+            }
+            let file = e.target.files[0];
+            let img = document.getElementById('inputImage');
+            img.src = URL.createObjectURL(file);
+            img.onload = function() {
+                URL.revokeObjectURL(img.src); // メモリ解放
+                processImage();
+            }
+        });
+
+        function processImage() {
+            document.getElementById('loader').style.display = 'block';
+            setTimeout(() => { // OpenCVのロード待ち
+                let imgElement = document.getElementById('inputImage');
+                let canvas = document.getElementById('canvas');
+                let ctx = canvas.getContext('2d');
+                canvas.width = imgElement.width;
+                canvas.height = imgElement.height;
+                ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+
+                let src = cv.imread(canvas);
+                let gray = new cv.Mat();
+                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+                let binary = new cv.Mat();
+                cv.threshold(gray, binary, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
+
+                // ノイズ除去
+                let kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(3, 3));
+                cv.morphologyEx(binary, binary, cv.MORPH_OPEN, kernel);
+
+                // 輪郭検出
+                let contours = new cv.MatVector();
+                let hierarchy = new cv.Mat();
+                cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+                // 各セルのバウンディングボックスを取得
+                let cells = [];
+                for (let i = 0; i < contours.size(); ++i) {
+                    let cnt = contours.get(i);
+                    let rect = cv.boundingRect(cnt);
+                    cells.push(rect);
+                    cnt.delete();
+                }
+
+                // セルをソート（左から右、上から下）
+                cells.sort((a, b) => {
+                    if (Math.abs(a.y - b.y) > 10) { // y座標で比較
+                        return a.y - b.y;
+                    } else { // x座標で比較
+                        return a.x - b.x;
+                    }
+                });
+
+                // 仮に各セルが同じサイズで並んでいると仮定
+                // 実際にはセルのサイズや間隔に応じて調整が必要
+                let decodedText = "";
+                for (let cell of cells) {
+                    let x = cell.x;
+                    let y = cell.y;
+                    let w = cell.width;
+                    let h = cell.height;
+                    let cellImg = binary.roi(cell);
+
+                    // 各点の位置を定義（相対座標）
+                    let points = [
+                        {x: Math.floor(w * 0.2), y: Math.floor(h * 0.2)}, // 点1
+                        {x: Math.floor(w * 0.2), y: Math.floor(h * 0.5)}, // 点2
+                        {x: Math.floor(w * 0.2), y: Math.floor(h * 0.8)}, // 点3
+                        {x: Math.floor(w * 0.7), y: Math.floor(h * 0.2)}, // 点4
+                        {x: Math.floor(w * 0.7), y: Math.floor(h * 0.5)}, // 点5
+                        {x: Math.floor(w * 0.7), y: Math.floor(h * 0.8)}  // 点6
+                    ];
+
+                    let pattern = '';
+                    for (let point of points) {
+                        let px = point.x;
+                        let py = point.y;
+                        // 小さな領域で点の有無を判定
+                        let size = 5; // 領域の半径
+                        let roi = cellImg.roi(new cv.Rect(px - size, py - size, size * 2, size * 2));
+                        let nonZero = cv.countNonZero(roi);
+                        pattern += (nonZero > 10) ? '1' : '0';
+                        roi.delete();
+                    }
+
+                    let character = brailleMapping[pattern] || '?';
+                    decodedText += character;
+                    cellImg.delete();
+                }
+
+                // 結果の表示
+                document.getElementById('decodedText').innerText = "デコード結果: " + decodedText;
+
+                // メモリ解放
+                src.delete(); gray.delete(); binary.delete(); contours.delete(); hierarchy.delete();
+                document.getElementById('loader').style.display = 'none';
+            }, 100); // 適宜調整
+        }
+    </script>
+</body>
+</html>
