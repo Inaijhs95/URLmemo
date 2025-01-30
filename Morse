@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>モールス信号デコーダー</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+        }
+        .button {
+            font-size: 24px;
+            padding: 20px 40px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        #inputArea {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #555;
+        }
+        #result {
+            font-size: 32px;
+            margin-top: 30px;
+            font-weight: bold;
+            color: #000;
+        }
+        #clearBtn {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #f44336;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        #clearBtn:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+    <h1>モールス信号デコーダー</h1>
+    <div>
+        <button class="button" id="dotBtn">・</button>
+        <button class="button" id="dashBtn">ー</button>
+    </div>
+    <div id="inputArea">入力: </div>
+    <div id="result">文字: </div>
+    <button id="clearBtn">クリア</button>
+
+    <script>
+        // モールス信号とアルファベットの対応表
+        const morseCodeMap = {
+            '・－': 'A', '－・・・': 'B', '－・－・': 'C', '－・・': 'D', '・': 'E',
+            '・・－・・': 'F', '－－・': 'G', '・・・・': 'H', '・・': 'I', '・－－－': 'J',
+            '－・－': 'K', '・－・・': 'L', '－－': 'M', '－・': 'N', '－－－': 'O',
+            '・－－・': 'P', '－－・－': 'Q', '・－・': 'R', '・・・': 'S', '－': 'T',
+            '・・－': 'U', '・・・－': 'V', '・－－': 'W', '－・・－': 'X', '－・－－': 'Y',
+            '－－・・': 'Z'
+        };
+
+        // 現在の入力を保持する変数
+        let currentInput = '';
+
+        // DOM要素の取得
+        const dotBtn = document.getElementById('dotBtn');
+        const dashBtn = document.getElementById('dashBtn');
+        const inputArea = document.getElementById('inputArea');
+        const resultArea = document.getElementById('result');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // ボタンクリック時の処理
+        dotBtn.addEventListener('click', () => {
+            addMorse('・');
+        });
+
+        dashBtn.addEventListener('click', () => {
+            addMorse('ー');
+        });
+
+        // クリアボタンの処理
+        clearBtn.addEventListener('click', () => {
+            currentInput = '';
+            inputArea.textContent = '入力: ';
+            resultArea.textContent = '文字: ';
+        });
+
+        // モールス信号を追加してデコード
+        function addMorse(symbol) {
+            currentInput += symbol;
+            inputArea.textContent = `入力: ${currentInput}`;
+            decodeMorse();
+        }
+
+        // モールス信号をデコードして表示
+        function decodeMorse() {
+            const character = morseCodeMap[currentInput];
+            if (character) {
+                resultArea.textContent = `文字: ${character}`;
+                // 次の文字の入力のためにリセット
+                currentInput = '';
+                inputArea.textContent = '入力: ';
+            }
+        }
+
+        // キーボード入力にも対応（オプション）
+        document.addEventListener('keydown', (event) => {
+            if (event.key === '.') {
+                addMorse('・');
+            } else if (event.key === '-') {
+                addMorse('ー');
+            } else if (event.key === 'Backspace') {
+                // 最後の入力を削除
+                currentInput = currentInput.slice(0, -1);
+                inputArea.textContent = `入力: ${currentInput}`;
+                resultArea.textContent = '文字: ';
+            } else if (event.key === 'Escape') {
+                // クリア
+                currentInput = '';
+                inputArea.textContent = '入力: ';
+                resultArea.textContent = '文字: ';
+            }
+        });
+    </script>
+</body>
+</html>
