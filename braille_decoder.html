@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>アルファベット点字デコードツール</title>
+    <title>点字</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,7 +42,7 @@
     </style>
 </head>
 <body>
-    <h1>アルファベット点字デコードツール</h1>
+    <h1>点字</h1>
     <div id="brailleContainer">
         <div class="braille-cell" data-index="0">
             <div class="braille-dot" data-dot="1"></div>
@@ -56,9 +56,9 @@
     <div class="controls">
         <button id="addCell">セルを追加</button>
         <button id="removeCell">セルを削除</button>
-        <button id="decode">デコード</button>
+        <button id="decode">変換</button>
     </div>
-    <div id="decodedText">デコード結果: </div>
+    <div id="decodedText">変換結果: </div>
 
     <script>
         const brailleMapping = {
