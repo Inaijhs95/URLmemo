@@ -178,13 +178,13 @@
         // モールス信号を追加
         function addMorse(symbol) {
             currentInput += symbol;
-            inputArea.textContent = `入力: ${currentInput}`;
+            inputArea.textContent = `🔦: ${currentInput}`;
         }
 
         // モールス信号をデコードして表示
         function convertMorse() {
             if (currentInput === '') {
-                alert('モールス信号を入力してください。');
+                alert('信号を入力してください。');
                 return;
             }
             const character = morseCodeMap[currentInput];
